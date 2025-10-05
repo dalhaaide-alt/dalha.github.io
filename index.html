@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dalha Portfolio — Clean (© 2025)</title>
+<style>
+:root{
+--autumn-orange:#d96f2a;
+--autumn-yellow:#a67b2d;
+--dark-gray:#0f1012;
+--text-color:#f2f2f2;
+--muted-color:#a3aab1;
+--panel-bg:rgba(15,16,18,0.38);
+--glass-blur: 16px;
+--glass-gloss: linear-gradient(120deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.02) 100%);
+--focus:3px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+margin:0;
+font-family:'Segoe UI',sans-serif;
+color:var(--text-color);
+background:var(--dark-gray);
+overflow-x:hidden
+}
+h1,h2,h3{font-family:serif;font-weight:900}
+#bgVideo{
+position:fixed;
+inset:0;
+width:100vw;
+height:100vh;
+min-width:100%;
+min-height:100%;
+object-fit:cover;
+z-index:-2;
+pointer-events:none;
+opacity:1;
+transition:opacity .08s
+}
+#bgVideo::after {
+content:"";
+position:absolute;
+inset:0;
+background:rgba(15,16,18,0.1);
+pointer-events:none;
+z-index:2;
+}
+.panel, nav, .form {
+background: var(--panel-bg);
+backdrop-filter: blur(var(--glass-blur));
+-webkit-backdrop-filter: blur(var(--glass-blur));
+border-radius: 14px;
+box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+position:relative;
+overflow: hidden;
+}
+.panel::before, nav::before, .form::before {
+content:'';
+position:absolute;
+left:0; top:0; right:0; height:54%;
+background: var(--glass-gloss);
+pointer-events:none;
+z-index:1;
+}
+.panel, .form { z-index: 10; }
+nav { z-index: 12; }
+@keyframes glow { 0%,100% { text-shadow: 0 0 10px var(--autumn-yellow), 0 0 20px var(--autumn-orange); } 50% { text-shadow: 0 0 30px #b45a28, 0 0 60px #8b2f15; } }
+@keyframes fadeOut { to { opacity: 0; pointer-events: none; } }
+.loader-wrapper{
+position:fixed;
+inset:0;
+z-index:99999;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+background:linear-gradient(135deg,var(--autumn-yellow) 0%,var(--autumn-orange) 55%,#8B2500 100%);
+transition:background 1s
+}
+.loader-wrapper.hide{animation:fadeOut 1s forwards}
+.loader-welcome{color:#fffbe7;font-family:'Playfair Display',serif;font-size:2.6rem;letter-spacing:2px;margin-bottom:18px;animation:glow 2.8s infinite;text-align:center;filter:drop-shadow(0 6px 30px rgba(139,37,13,0.22))}
+.project-showcase{display:flex;gap:30px;margin:22px 0 0 0;justify-content:center}
+.icon-wrapper{transition:all 0.6s cubic-bezier(.5,1.7,.3,1.1);transform:scale(0.7);opacity:0}
+.icon-wrapper.show{transform:scale(1);opacity:1}
+.loader-sub{color:#fffbe7;max-width:420px;text-align:center;font-size:1.05rem;font-weight:500;margin-bottom:12px;text-shadow:0 1px 8px rgba(139,37,13,0.25)}
+.loader-bottom{position:absolute;bottom:36px;color:rgba(255,215,0,0.85);font-size:1rem;letter-spacing:1px;user-select:none}
+#app{position:relative;z-index:10;min-height:100vh;}
+nav{
+display:flex;
+justify-content:center;
+gap:12px;
+padding:18px;
+margin: 0 auto 18px;
+width:fit-content;
+background:var(--panel-bg);
+backdrop-filter:blur(var(--glass-blur));
+border-radius:12px;
+z-index:12
+}
+.btn{
+background:rgba(255,255,255,0.08);
+border:1px solid rgba(255,255,255,0.12);
+padding:10px 16px;
+border-radius:8px;
+color:var(--text-color);
+cursor:pointer;
+transition:transform .12s,box-shadow .18s,background .35s;
+box-shadow:0 2px 7px rgba(0,0,0,0.07);
+position:relative;
+z-index:2;
+}
+.btn:active{transform:scale(.98)}
+.panel{
+max-width:960px;
+margin:26px auto;
+background:var(--panel-bg);
+backdrop-filter:blur(var(--glass-blur));
+padding:22px;
+border-radius:12px;
+box-shadow:0 10px 40px rgba(0,0,0,0.6);
+position:relative;
+z-index:10;
+}
+h1,h2{margin:0 0 12px 0;text-align:center}
+.earth{width:220px;height:220px;margin:0 auto 14px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#3d5c41 18%,#5c3c13 85%);box-shadow:0 0 120px rgba(217,111,42,0.18);animation:floatSway 7s ease-in-out infinite alternate;transform-origin:center}
+@keyframes floatSway{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}
+.floaty{transform:translateY(6px);animation:floaty 6s ease-in-out infinite alternate}
+@keyframes floaty{to{transform:translateY(-6px)}}
+.footer{padding:18px;text-align:center;color:var(--muted-color);opacity:.95}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;z-index:120}
+.form{background:linear-gradient(180deg,#15130b,#120b08);padding:16px;border-radius:10px;max-width:520px;width:90%}
+.link{color:var(--autumn-yellow);text-decoration:none;padding:8px 12px;border-radius:8px;background:rgba(255,215,0,0.04)}
+[tabindex]:focus, button:focus, a:focus, input:focus { box-shadow: 0 0 0 var(--focus) rgba(217,111,42,0.22); border-radius:6px }
+.animate {opacity:0; transform:translateY(18px) scale(0.995); transition:opacity .7s cubic-bezier(.2,.9,.25,1), transform .7s cubic-bezier(.2,.9,.25,1); will-change: opacity, transform}
+.animate.in-view {opacity:1; transform:none}
+.animate.up-in-view {opacity:1; transform:translateY(-18px) scale(1);}
+.animate.up-out-view {opacity:0; transform:translateY(-18px) scale(0.995);}
+.animate.down-out-view {opacity:0; transform:translateY(18px) scale(0.995);}
+.fade-left {transform:translateX(-18px);}
+.fade-right {transform:translateX(18px);}
+.scale-up {transform:scale(.96);}
+.earth.parallax { transition: transform 0.12s linear; }
+.panel::after, nav::after, .form::after {
+content:'';
+position:absolute;
+left:10px; right:10px; top:10px;
+height:25px;
+background:linear-gradient(90deg,rgba(255,255,255,0.18),rgba(255,255,255,0.06) 60%,rgba(255,255,255,0.00) 100%);
+border-radius:12px;
+pointer-events:none;
+z-index:2;
+filter:blur(0.5px);
+opacity:.6;
+}
+.skills-panel{
+margin:32px auto 0;
+max-width:960px;
+background:var(--panel-bg);
+padding:22px 22px 18px 22px;
+border-radius:14px;
+box-shadow:0 10px 40px rgba(0,0,0,0.6);
+position:relative;
+z-index:11;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:14px;
+}
+.skills-title{
+margin:0 0 10px 0;
+font-family:serif;
+font-size:1.45rem;
+font-weight:900;
+letter-spacing:1px;
+text-align:center;
+color:var(--autumn-yellow);
+filter:drop-shadow(0 2px 6px rgba(217,111,42,0.18));
+}
+.skills-list{
+display:flex;
+gap:22px;
+flex-wrap:wrap;
+justify-content:center;
+align-items:center;
+margin-bottom:6px;
+}
+.skill-btn{
+background:rgba(255,255,255,0.08);
+border:1.5px solid rgba(255,255,255,0.12);
+border-radius:10px;
+padding:0;
+width:54px;
+height:54px;
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:0 2px 7px rgba(0,0,0,0.09);
+cursor:pointer;
+transition:transform .18s, box-shadow .20s, background .18s;
+position:relative;
+outline:none;
+}
+.skill-btn:active{transform:scale(.96);}
+.skill-btn:hover,.skill-btn:focus{
+background:rgba(255,215,0,0.10);
+box-shadow:0 2px 10px 2px rgba(217,111,42,0.07);
+z-index:2;
+}
+.skill-btn .skill-tooltip{
+display:none;
+position:absolute;
+left:50%;
+bottom:62px;
+transform:translateX(-50%);
+background:rgba(30,30,30,0.98);
+color:#fffbe7;
+font-size:0.92rem;
+padding:5px 12px;
+border-radius:7px;
+white-space:nowrap;
+box-shadow:0 2px 18px rgba(0,0,0,0.13);
+pointer-events:none;
+z-index:20;
+letter-spacing:0.02em;
+opacity:0;
+transition:opacity .18s;
+}
+.skill-btn:hover .skill-tooltip,
+.skill-btn:focus .skill-tooltip{
+display:block;
+opacity:1;
+}
+.more-btn{
+background:rgba(255,255,255,0.04);
+border:1.5px dashed #b45a28;
+color:#b45a28;
+width:auto;
+min-width:54px;
+font-size:1.08rem;
+height:54px;
+border-radius:10px;
+padding:0 23px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+margin-left:8px;
+font-weight:600;
+letter-spacing:0.06em;
+transition:background .14s, border-color .14s, color .14s;
+}
+.more-btn:hover,.more-btn:focus{
+background:rgba(217,111,42,0.14);
+border-color:#d96f2a;
+color:#d96f2a;
+}
+#ideaText{width:100%;min-height:120px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.35);color:var(--text-color);resize:vertical;font-family:inherit}
+.modal.show{display:flex}
+.modal .form h3{margin:0 0 10px 0;font-size:1.12rem;color:var(--autumn-yellow);font-weight:800}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
+
+/* Modal form: match glassmorphism style used across site */
+#ideaModal .form{
+  background: var(--panel-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  padding:18px;
+  max-width:560px;
+  width:92%;
+  position:relative;
+  z-index:10;
+}
+#ideaModal .form::before{
+  content:'';
+  position:absolute;
+  left:0; top:0; right:0;
+  height:48%;
+  background: var(--glass-gloss);
+  pointer-events:none;
+  z-index:1;
+  border-top-left-radius:14px;
+  border-top-right-radius:14px;
+}
+#ideaText{position:relative;z-index:2;background:transparent;border:1px solid rgba(255,255,255,0.06);padding:12px;color:var(--text-color)}
+#ideaModal .modal-actions{position:relative;z-index:2}
+</style>
+</head>
+<body>
+<video id="bgVideo" autoplay loop muted playsinline preload="auto" tabindex="-1" aria-hidden="true"></video>
+<div id="autumnLoader" class="loader-wrapper" role="status" aria-live="polite">
+<h1 class="loader-welcome">Welcome to My Portfolio! 🍁</h1>
+<div class="loader-sub">Explore my world of code and design:<br>REVEL<br>Peruse My Additional sites they will be linked.</div>
+<div class="project-showcase" id="projectShowcase"></div>
+<div class="loader-bottom">Loading...</div>
+</div>
+<canvas id="confettiCanvas" style="position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:9998;display:none"></canvas>
+<div id="app" role="main" aria-label="Dalha portfolio app">
+<nav aria-label="main navigation" class="nav">
+<button class="btn navbtn" data-target="home">Home</button>
+<button class="btn navbtn" data-target="about">About</button>
+<button class="btn navbtn" data-target="timeline">Timeline</button>
+<button class="btn navbtn" data-target="inspired">Inspired</button>
+<button class="btn navbtn" data-target="contact">Contact</button>
+<button class="btn navbtn" id="openIdea">Share idea</button>
+</nav>
+<section class="panel animate" data-animate="fade-up" id="home"><div class="back"></div><div class="earth floaty parallax" aria-hidden="true"></div><h1>Dalha Portfolio</h1><p style="text-align:center;margin:12px 0 0">Do you require a website Engineered to your exigencies? look no further</p><p style="text-align:right;margin-top:14px;color:var(--muted-color)">© Dalha</p></section>
+<section class="panel animate" data-animate="fade-up" id="about"><div class="back"></div><h2>About</h2><p>I'm Dalha.Iam master in a multitude of programming languages, complemented by expertise in both web and application development.</p></section>
+<section class="panel animate" data-animate="fade-up" id="timeline"><div class="back"></div><h2>Timeline</h2><p><strong>2023</strong> — Started building sites and experimenting.</p><p><strong>2024</strong> — Kept improving.</p></section>
+<section class="panel animate" data-animate="fade-up" id="inspired"><div class="back"></div><h2>Inspired</h2><p>My preferred season is autumn.</p></section>
+<section class="panel animate" data-animate="fade-up" id="contact"><div class="back"></div><h2>Contact</h2><p>Email: <a class="link" href="https://mail.google.com/mail/?view=cm&fs=1&to=dalhaaide@gmail.com" target="_blank" rel="noopener">dalhaaide@gmail.com</a></p></section>
+<section class="skills-panel animate" data-animate="fade-up" id="skills">
+<div class="skills-title">Languages & Frameworks</div>
+<div class="skills-list">
+<button class="skill-btn" tabindex="0">
+<span class="skill-tooltip">HTML 5</span>
+<svg width="38" height="38" viewBox="0 0 128 128"><g><path fill="#e44d26" d="M19.78 116.48L8.16 0h111.68l-11.62 116.44L63.93 128"/><path fill="#f16529" d="M64 119.2l37.47-10.4 9.94-99.1H64"/><path fill="#ebebeb" d="M64 52.31H44.32l-1.28-13.89H64V25.03H29.22l.34 3.9 3.49 39.19H64zM64 90.34h-.05l-15.65-4.23-.98-10.97H34.87l1.93 21.7 27.13 7.53h.07z"/></g></svg>
+</button>
+<button class="skill-btn" tabindex="0">
+<span class="skill-tooltip">CSS 3</span>
+<svg width="38" height="38" viewBox="0 0 128 128"><g><path fill="#1572b6" d="M19.75 116.45L8.1 0h111.8l-11.66 116.43L63.98 128"/><path fill="#33a9dc" d="M64 119.17l37.47-10.4 9.92-99.07H64"/><path fill="#fff" d="M64 52.31H44.28l-1.27-13.88H64v-13.4H29.18l.34 3.89 3.48 39.18H64z"/></g></svg>
+</button>
+<button class="skill-btn" tabindex="0" aria-label="Sass / SCSS">
+<span class="skill-tooltip">Sass / SCSS</span>
+<img src="https://commons.wikimedia.org/wiki/Special:FilePath/Sass_Logo_Color.svg" width="38" height="38" alt="Sass logo" loading="lazy" />
+</button>
+<button class="skill-btn" tabindex="0">
+<span class="skill-tooltip">Java</span>
+<img src="https://commons.wikimedia.org/wiki/Special:FilePath/Coffee_cup_icon.svg" width="38" height="38" alt="Coffee cup icon" loading="lazy" />
+</button>
+<button class="skill-btn" tabindex="0">
+<span class="skill-tooltip">JavaScript</span>
+<img src="https://commons.wikimedia.org/wiki/Special:FilePath/Unofficial_JavaScript_logo_2.svg" width="38" height="38" alt="JavaScript logo" loading="lazy" />
+</button>
+<button class="skill-btn" tabindex="0">
+<span class="skill-tooltip">Node.js</span>
+<img src="https://commons.wikimedia.org/wiki/Special:FilePath/Node.js_logo.svg" width="38" height="38" alt="Node.js logo" loading="lazy" />
+</button>
+<button class="skill-btn" tabindex="0">
+<span class="skill-tooltip">React</span>
+<svg width="38" height="38" viewBox="0 0 48 48"><g><circle cx="24" cy="24" r="4" fill="#61dafb"/><ellipse cx="24" cy="24" rx="20" ry="8" stroke="#61dafb" stroke-width="3" fill="none"/><ellipse cx="24" cy="24" rx="20" ry="8" stroke="#61dafb" stroke-width="3" fill="none" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="8" stroke="#61dafb" stroke-width="3" fill="none" transform="rotate(120 24 24)"/></g></svg>
+</button>
+<button class="more-btn" tabindex="0" id="moreSkillsBtn">+ more</button>
+<button class="skill-btn" style="display:none" id="threejsSkillBtn" tabindex="0" aria-label="Three.js">
+<span class="skill-tooltip">Three.js</span>
+<img src="https://commons.wikimedia.org/wiki/Special:FilePath/Three.js_Icon.svg" width="38" height="38" alt="Three.js logo" loading="lazy" />
+</button>
+<button class="skill-btn" style="display:none" id="cppSkillBtn" tabindex="0">
+<span class="skill-tooltip">C++</span>
+<img src="https://commons.wikimedia.org/wiki/Special:FilePath/ISO_C%2B%2B_Logo.svg" width="38" height="38" alt="C++ logo" loading="lazy" />
+</button>
+<button class="skill-btn" style="display:none" id="tailwindSkillBtn" tabindex="0">
+<span class="skill-tooltip">Tailwind</span>
+<svg width="38" height="38" viewBox="0 0 128 128"><path d="M24 64c8-16 20-24 40-24s32 8 40 24c-8 16-20 24-40 24s-32-8-40-24z" fill="#38bdf8"/><path d="M40 64c4-8 10-12 20-12s16 4 20 12c-4 8-10 12-20 12s-16-4-20-12z" fill="#0ea5e9"/></svg>
+</button>
+</div>
+</section>
+<footer class="footer">© 2025 Dalha</footer>
+</div>
+
+<div id="ideaModal" class="modal" role="dialog" aria-hidden="true" aria-labelledby="ideaTitle">
+  <div class="form" role="document">
+    <h3 id="ideaTitle">Share your idea</h3>
+    <textarea id="ideaText" placeholder="Write your idea here..."></textarea>
+    <div class="modal-actions">
+      <button id="cancelIdea" class="btn" type="button">Cancel</button>
+      <button id="sendIdea" class="btn" type="button">Compose</button>
+    </div>
+  </div>
+</div>
+
+<audio id="bgm" loop preload="auto" src="https://files.catbox.moe/0hlf6s.mp3"></audio>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+const bgVideo=document.getElementById('bgVideo');
+const externalVideoSrc='https://files.catbox.moe/iqv3jp.mp4';
+if(bgVideo){
+    bgVideo.style.opacity='1';
+    bgVideo.muted = true;
+    bgVideo.loop = true;
+    bgVideo.preload = 'auto';
+    bgVideo.playsInline = true;
+    bgVideo.currentTime = 0.02;
+    bgVideo.style.willChange='opacity,transform';
+    const playNow = () => { bgVideo.play().catch(()=>{}); };
+    playNow();
+    document.addEventListener('DOMContentLoaded', playNow, {once:true});
+}
+async function prepareVideo(){
+    if(!bgVideo) return;
+    try{
+        const cacheName='dalha-assets-v1';
+        const cacheKey=new Request('/bg-video.mp4');
+        const cache=await caches.open(cacheName);
+        const cachedResp=await cache.match(cacheKey);
+        if(cachedResp){
+            const blob=await cachedResp.blob();
+            const url=URL.createObjectURL(blob);
+            bgVideo.src=url;
+            bgVideo.setAttribute('preload','auto');
+            bgVideo.load();
+            return;
+        }
+        const fetched=await fetch(externalVideoSrc, {mode:'cors',cache:'no-cache'});
+        if(fetched && fetched.ok){
+            await cache.put(cacheKey, fetched.clone());
+            const blob=await fetched.blob();
+            const url=URL.createObjectURL(blob);
+            bgVideo.src=url;
+            bgVideo.setAttribute('preload','auto');
+            bgVideo.load();
+            return;
+        }
+    }catch(e){
+        bgVideo.src=externalVideoSrc;
+        bgVideo.setAttribute('preload','auto');
+    }
+}
+prepareVideo();
+const loader=document.getElementById('autumnLoader');
+const projectShowcase=document.getElementById('projectShowcase');
+const bgm=document.getElementById('bgm');
+let startedAudio=false;
+const ICONS=[
+`<svg width="48" height="48" fill="none"><rect x="8" y="8" width="32" height="32" rx="8" fill="#fffbe7" stroke="#8b2f15" stroke-width="3"/><rect x="16" y="16" width="16" height="6" rx="2" fill="#ffd27a"/><circle cx="18" cy="30" r="2.5" fill="#d96f2a"/><circle cx="24" cy="30" r="2.5" fill="#b45a28"/><circle cx="30" cy="30" r="2.5" fill="#8b2f15"/></svg>`,
+`<svg width="48" height="48" viewBox="0 0 48 48"><g><ellipse cx="24" cy="27" rx="9" ry="10" fill="#f6d7c0"/><ellipse cx="24" cy="16" rx="5.5" ry="7" fill="#ffd7b5"/><ellipse cx="13" cy="29" rx="5.5" ry="4" fill="#ffcf99"/><ellipse cx="35" cy="29" rx="5.5" ry="4" fill="#ffb347"/><circle cx="24" cy="23" r="3.5" fill="#b45a28" stroke="#fffbe7" stroke-width="2"/></g></svg>`,
+`<svg width="48" height="48" fill="none"><rect x="8" y="12" width="32" height="24" rx="5" fill="#fffbe7" stroke="#b45a28" stroke-width="3"/><rect x="15" y="17" width="18" height="3" rx="1.5" fill="#d96f2a"/><rect x="15" y="23" width="12" height="3" rx="1.5" fill="#8b2f15"/></svg>`,
+`<svg width="48" height="48" fill="none"><rect x="10" y="14" width="28" height="18" rx="5" fill="#ffd27a" stroke="#8b2f15" stroke-width="3"/><circle cx="16" cy="36" r="3" fill="#b45a28"/><circle cx="32" cy="36" r="3" fill="#d96f2a"/><rect x="20" y="19" width="8" height="8" rx="2" fill="#fffbe7"/></svg>`
+];
+function injectIcons(){
+    ICONS.forEach(svg=>{
+        const wrapper=document.createElement('div');
+        wrapper.className='icon-wrapper animate scale-up';
+        wrapper.setAttribute('data-animate','scale-up');
+        wrapper.innerHTML=svg;
+        projectShowcase.appendChild(wrapper);
+    });
+}
+function revealIcons(){
+    const wrappers=Array.from(projectShowcase.children);
+    wrappers.forEach((w,i)=>{setTimeout(()=>{w.classList.add('show');},800+i*700);});
+}
+function startAudio(){
+    if(startedAudio) return;
+    startedAudio=true;
+    if(!bgm) return;
+    bgm.volume=0;
+    bgm.play().catch(()=>{});
+    let v=0;
+    const t=setInterval(()=>{v+=0.02;if(v>=0.22){bgm.volume=0.22;clearInterval(t);}else bgm.volume=v;},100);
+}
+document.addEventListener('pointerdown',()=>{startAudio();if(bgVideo&&bgVideo.paused) bgVideo.play().catch(()=>{});},{once:true});
+injectIcons();
+revealIcons();
+setTimeout(()=>{loader.classList.add('hide');setTimeout(()=>{if(loader&&loader.parentNode) loader.parentNode.removeChild(loader);const app=document.getElementById('app');if(app) app.setAttribute('aria-hidden','false');},1200);},6000);
+window.addEventListener('DOMContentLoaded', ()=>{
+    if(typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('.panel, .skills-panel').forEach(panel=>{
+        let enterAnim = {opacity:1, y:0, scale:1, filter:'blur(0px)', duration:0.9, ease:'power2.out'};
+        let leaveAnimDown = {opacity:0, y:70, scale:0.985, filter:'blur(5px)', duration:0.7, ease:'power2.in'};
+        let leaveAnimUp = {opacity:0, y:-70, scale:0.985, filter:'blur(5px)', duration:0.7, ease:'power2.in'};
+        let lastDirection = 1;
+        ScrollTrigger.create({
+            trigger:panel,
+            start:'top 85%',
+            onEnter:self=>{
+                gsap.to(panel, enterAnim);
+                panel.classList.add('in-view');
+                panel.classList.remove('down-out-view','up-out-view');
+            },
+            onLeave:self=>{
+                gsap.to(panel, leaveAnimDown);
+                panel.classList.remove('in-view');
+                panel.classList.add('down-out-view');
+                lastDirection = 1;
+            },
+            onEnterBack:self=>{
+                gsap.to(panel, enterAnim);
+                panel.classList.add('in-view');
+                panel.classList.remove('down-out-view','up-out-view');
+                lastDirection = -1;
+            },
+            onLeaveBack:self=>{
+                gsap.to(panel, leaveAnimUp);
+                panel.classList.remove('in-view');
+                panel.classList.add('up-out-view');
+                lastDirection = -1;
+            }
+        });
+        const gloss = panel.querySelector('.glass-gloss');
+        if(gloss){
+            gsap.fromTo(gloss, {opacity:.35, x:-50}, {opacity:.65, x:0, scrollTrigger:{trigger:panel,start:'top 95%',end:'top 35%',scrub:0.8}});
+        }
+    });
+    const earth = document.querySelector('.earth.parallax');
+    if(earth){
+        gsap.to(earth, {
+            y:-24,
+            ease:"power1.inOut",
+            scrollTrigger:{
+                trigger:earth.parentElement,
+                start:"top top",
+                end:"bottom top",
+                scrub:true
+            }
+        });
+    }
+});
+const navButtons=Array.from(document.querySelectorAll('nav button.navbtn')).filter(b=>b.dataset.target);
+navButtons.forEach(b=>{b.addEventListener('click',()=>{const target=b.dataset.target;const el=document.getElementById(target);if(el) el.scrollIntoView({behavior:'smooth',block:'start'});});});
+const sections=['home','about','timeline','inspired','contact','skills'].map(id=>document.getElementById(id)).filter(Boolean);
+function updateActiveNav(){const center=window.scrollY+window.innerHeight*0.3;let current='home';for(const s of sections){const top=s.offsetTop;if(center>=top) current=s.id;}navButtons.forEach(b=>b.classList.toggle('active',b.dataset.target===current));}
+window.addEventListener('scroll',updateActiveNav,{passive:true});
+updateActiveNav();
+if(bgVideo){bgVideo.setAttribute('preload','auto');}
+document.getElementById('moreSkillsBtn').addEventListener('click',function(){
+    ['threejsSkillBtn','cppSkillBtn','tailwindSkillBtn'].forEach(function(id){
+        var el=document.getElementById(id);
+        if(el && (el.style.display==='none'||el.style.display==='')){
+            el.style.display='flex';
+            el.focus();
+        }
+    });
+});
+const ideaModal = document.getElementById('ideaModal');
+const ideaText = document.getElementById('ideaText');
+const openIdeaBtn = document.getElementById('openIdea');
+const sendIdeaBtn = document.getElementById('sendIdea');
+const cancelIdeaBtn = document.getElementById('cancelIdea');
+
+openIdeaBtn.addEventListener('click', function(){
+    ideaText.value = '';
+    ideaModal.classList.add('show');
+    ideaModal.setAttribute('aria-hidden','false');
+    setTimeout(()=>{ideaText.focus();},40);
+});
+cancelIdeaBtn.addEventListener('click', function(){
+    ideaModal.classList.remove('show');
+    ideaModal.setAttribute('aria-hidden','true');
+    openIdeaBtn.focus();
+});
+ideaModal.addEventListener('click', function(e){
+    if(e.target === ideaModal){
+        ideaModal.classList.remove('show');
+        ideaModal.setAttribute('aria-hidden','true');
+        openIdeaBtn.focus();
+    }
+});
+document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && ideaModal.classList.contains('show')){
+        ideaModal.classList.remove('show');
+        ideaModal.setAttribute('aria-hidden','true');
+        openIdeaBtn.focus();
+    }
+});
+sendIdeaBtn.addEventListener('click', function(){
+    let message = (ideaText.value || '').trim();
+    if(!message){
+        message = 'No message provided.';
+    }
+    const subject = 'Idea from website';
+    const body = message + '\n\n--\nSent from Dalha portfolio';
+    const gmailBase = 'https://mail.google.com/mail/u/0/?fs=1&to=dalhaaide@gmail.com&tf=cm';
+    const url = gmailBase + '&su=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    window.open(url, '_blank');
+    ideaModal.classList.remove('show');
+    ideaModal.setAttribute('aria-hidden','true');
+});
+</script>
+</body>
+</html>
