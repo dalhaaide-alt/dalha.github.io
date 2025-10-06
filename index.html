@@ -1,4 +1,15 @@
-<!doctype html>
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>autumn-</title>
+    
+
+  </head>
+    
+  <body>
+  <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -572,5 +583,21 @@ sendIdeaBtn.addEventListener('click', function(){
     ideaModal.setAttribute('aria-hidden','true');
 });
 </script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').then(function(reg){
+    if(reg.waiting) reg.waiting.postMessage({type:'PRECACHE_VIDEO', url: externalVideoSrc, key:'/bg-video.mp4'});
+    if(reg.active) reg.active.postMessage({type:'PRECACHE_VIDEO', url: externalVideoSrc, key:'/bg-video.mp4'});
+  }).catch(function(){});
+  navigator.serviceWorker.addEventListener('message', function(e){
+    if(e.data && e.data.type === 'VIDEO_CACHED'){ prepareVideo(); }
+  });
+}
+</script>
 </body>
+</html>
+    <script  src="./script.js"></script>
+
+  </body>
+  
 </html>
